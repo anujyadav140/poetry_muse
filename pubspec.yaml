@@ -37,6 +37,7 @@ dependencies:
   appinio_swiper: ^1.1.1
   rive: ^0.9.1
   google_fonts: ^3.0.1
+  lottie: ^2.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -70,6 +71,7 @@ flutter:
   - assets/empty_robot.riv
   - assets/empty-robot.riv
   - assets/puppy.riv
+  - assets/question.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // ignore: must_be_immutable
 class NeoBrutton extends StatefulWidget {
@@ -8,12 +10,16 @@ class NeoBrutton extends StatefulWidget {
     required this.onPress,
     this.isCircle = true,
     this.isIcon = true,
-    // required this.buttonName,
+    this.buttonName = '',
+    this.buttonHeight = 50,
+    this.buttonWidth = 50,
   });
   late VoidCallback onPress;
   late bool isCircle;
   late bool isIcon;
-  // final String buttonName;
+  late String buttonName;
+  late double buttonHeight;
+  late double buttonWidth;
 
   @override
   State<NeoBrutton> createState() => _NeoBruttonState();
@@ -58,13 +64,23 @@ class _NeoBruttonState extends State<NeoBrutton>
   Widget build(BuildContext context) {
     _scale = 1 - _controller.value;
     return SizedBox(
-      height: 50,
-      width: 50,
+      height: widget.buttonHeight,
+      width: widget.buttonWidth,
       child: FittedBox(
         fit: BoxFit.contain,
         child: Transform.scale(
           scale: _scale,
           child: Container(
+            height: !widget.isCircle
+                ? null
+                : widget.isIcon
+                    ? null
+                    : widget.buttonHeight,
+            width: !widget.isCircle
+                ? widget.buttonWidth
+                : widget.isIcon
+                    ? null
+                    : widget.buttonWidth,
             decoration: BoxDecoration(
                 shape: widget.isCircle ? BoxShape.circle : BoxShape.rectangle,
                 boxShadow: const [
@@ -80,11 +96,14 @@ class _NeoBruttonState extends State<NeoBrutton>
                 _controller.forward();
                 widget.onPress();
               },
-              style:  ButtonStyle(
-                side: const MaterialStatePropertyAll(BorderSide(width: 2.5)),
+              style: ButtonStyle(
+                side: MaterialStatePropertyAll(
+                    BorderSide(width: widget.isCircle ? 2.5 : 1.5)),
                 padding: const MaterialStatePropertyAll(EdgeInsets.all(20.0)),
                 backgroundColor: const MaterialStatePropertyAll(Colors.white),
-                shape: MaterialStatePropertyAll(widget.isCircle ? const CircleBorder() : const BeveledRectangleBorder()),
+                shape: MaterialStatePropertyAll(widget.isCircle
+                    ? const CircleBorder()
+                    : const BeveledRectangleBorder()),
               ),
               child: widget.isIcon
                   ? const Icon(
@@ -92,7 +111,14 @@ class _NeoBruttonState extends State<NeoBrutton>
                       size: 70,
                       color: Colors.black,
                     )
-                  : const Text(""),
+                  : Text(
+                      widget.buttonName,
+                      style: GoogleFonts.farro(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
             ),
           ),
         ),
