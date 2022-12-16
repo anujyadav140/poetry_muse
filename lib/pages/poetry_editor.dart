@@ -110,6 +110,7 @@ class _PoetryEditorState extends State<PoetryEditor>
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     var counter = 0;
+    var temp_index = 0;
     return Stack(
       children: [
         Center(
@@ -135,6 +136,7 @@ class _PoetryEditorState extends State<PoetryEditor>
               physics: const AlwaysScrollableScrollPhysics(),
               initialItemCount: _linesTracker.length,
               itemBuilder: (context, index, animation) {
+                temp_index = index;
                 return Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: GestureDetector(
@@ -151,6 +153,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                           TextPosition(offset: _line[index].length),
                         );
                       });
+                      _anotherLine = false;
                       print(index);
                     },
                     child: NeoLineContainer(
@@ -166,7 +169,9 @@ class _PoetryEditorState extends State<PoetryEditor>
                       },
                       line: _line[index],
                       toEdit: _selectForEdit == _linesTracker[index],
-                      needNewLine: _anotherLine,
+                      needNewLine: _selectForEdit == _linesTracker[index]
+                          ? _anotherLine
+                          : false,
                     ),
                   ),
                 );
