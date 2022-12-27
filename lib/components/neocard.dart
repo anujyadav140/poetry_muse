@@ -23,67 +23,68 @@ class NeoCard extends StatelessWidget {
         child: SizedBox(
           height: height,
           width: width,
-          child: Stack(children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(width: 2.5, color: Colors.black),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black,
-                    offset: Offset(3.5, 3.5),
-                    blurRadius: 0,
-                    spreadRadius: -1,
-                  )
-                ],
-              ),
-              child: Container(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text(
-                        title,
-                        style: GoogleFonts.farro(
-                            fontSize: 20,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      subtitle: Text(subTitle,
-                          style: GoogleFonts.farro(
-                            color: Colors.black,
-                          )),
-                      leading: Lottie.asset('assets/question.json', width: 40, height: 40,),
-                    ),
-                    const Divider(color: Colors.black, thickness: 2.5),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          NeoBrutton(
-                            onPress: () {},
-                            isCircle: false,
-                            isIcon: false,
-                            buttonHeight: 50,
-                            buttonWidth: 100,
-                            buttonName: 'Yes.',
-                          ),
-                          NeoBrutton(
-                            onPress: () {},
-                            isCircle: false,
-                            isIcon: false,
-                            buttonHeight: 50,
-                            buttonWidth: 100,
-                            buttonName: 'No. ',
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black, width: 1),
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+              color: Colors.white,
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black54,
+                  offset: Offset(5, 5),
+                  blurRadius: 5,
+                  spreadRadius: -1,
                 ),
-              ),
+              ],
             ),
-          ]),
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text(
+                    title,
+                    style: GoogleFonts.farro(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: Text(subTitle,
+                      style: GoogleFonts.farro(
+                        color: Colors.black,
+                      )),
+                  leading: Lottie.asset(
+                    'assets/question.json',
+                    width: 40,
+                    height: 40,
+                  ),
+                ),
+                const Divider(color: Colors.black54, thickness: 1.5),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      NeoBrutton(
+                        onPress: () {},
+                        isCircle: false,
+                        isIcon: false,
+                        buttonHeight: 50,
+                        buttonWidth: 100,
+                        buttonName: 'Yes.',
+                      ),
+                      NeoBrutton(
+                        onPress: () {},
+                        isCircle: false,
+                        isIcon: false,
+                        buttonHeight: 50,
+                        buttonWidth: 100,
+                        buttonName: 'No. ',
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );

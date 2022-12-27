@@ -68,14 +68,14 @@ class NeoLineContainer extends StatelessWidget {
                         : selected
                             ? Colors.grey[200]
                             : Colors.white,
-                    border: Border.all(color: Colors.black, width: 2.5),
+                    border: Border.all(color: Colors.black, width: 1),
                     boxShadow: selected
                         ? null
                         : const [
                             BoxShadow(
-                              color: Colors.black,
-                              offset: Offset(3.5, 3.5),
-                              blurRadius: 0,
+                              color: Colors.black54,
+                              offset: Offset(3, 3),
+                              blurRadius: 5,
                               spreadRadius: -1,
                             ),
                           ],

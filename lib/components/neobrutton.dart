@@ -13,6 +13,11 @@ class NeoBrutton extends StatefulWidget {
     this.buttonName = '',
     this.buttonHeight = 50,
     this.buttonWidth = 50,
+    this.buttonIcon = const Icon(
+      Icons.view_carousel_outlined,
+      size: 70,
+      color: Colors.black,
+    ),
   });
   late VoidCallback onPress;
   late bool isCircle;
@@ -20,7 +25,7 @@ class NeoBrutton extends StatefulWidget {
   late String buttonName;
   late double buttonHeight;
   late double buttonWidth;
-
+  late Icon buttonIcon;
   @override
   State<NeoBrutton> createState() => _NeoBruttonState();
 }
@@ -83,11 +88,13 @@ class _NeoBruttonState extends State<NeoBrutton>
                     : widget.buttonWidth,
             decoration: BoxDecoration(
                 shape: widget.isCircle ? BoxShape.circle : BoxShape.rectangle,
+                borderRadius:
+                    widget.isCircle ? null : BorderRadius.circular(20),
                 boxShadow: const [
                   BoxShadow(
-                    color: Colors.black,
-                    offset: Offset(3.5, 3.5),
-                    blurRadius: 0,
+                    color: Colors.black54,
+                    offset: Offset(5, 5),
+                    blurRadius: 5,
                     spreadRadius: -1,
                   ),
                 ]),
@@ -98,19 +105,18 @@ class _NeoBruttonState extends State<NeoBrutton>
               },
               style: ButtonStyle(
                 side: MaterialStatePropertyAll(
-                    BorderSide(width: widget.isCircle ? 2.5 : 1.5)),
+                    BorderSide(width: widget.isCircle ? 1.5 : 0.5)),
+                surfaceTintColor: const MaterialStatePropertyAll(Colors.red),
+                shadowColor: const MaterialStatePropertyAll(Colors.black54),
                 padding: const MaterialStatePropertyAll(EdgeInsets.all(20.0)),
                 backgroundColor: const MaterialStatePropertyAll(Colors.white),
                 shape: MaterialStatePropertyAll(widget.isCircle
                     ? const CircleBorder()
-                    : const BeveledRectangleBorder()),
+                    : const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20)))),
               ),
               child: widget.isIcon
-                  ? const Icon(
-                      Icons.view_carousel_outlined,
-                      size: 70,
-                      color: Colors.black,
-                    )
+                  ? widget.buttonIcon
                   : Text(
                       widget.buttonName,
                       style: GoogleFonts.farro(

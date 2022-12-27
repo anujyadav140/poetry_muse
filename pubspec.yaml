@@ -38,7 +38,7 @@ dependencies:
   rive: ^0.9.1
   google_fonts: ^3.0.1
   lottie: ^2.1.0
-
+  convex_bottom_bar: ^3.1.0+1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

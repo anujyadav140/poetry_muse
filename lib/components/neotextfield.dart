@@ -36,13 +36,22 @@ class NeoTextField extends StatelessWidget {
                   contentPadding:
                       EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                   border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 3.0),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.black, width: 1.0),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 3.0),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.black, width: 1.0),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 2.5),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    borderSide: BorderSide(color: Colors.black, width: 1.0),
                   ),
                 ),
                 keyboardType: TextInputType.text,
