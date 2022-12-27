@@ -7,10 +7,12 @@ class NeoTextField extends StatelessWidget {
     super.key,
     required this.textController,
     required this.onTextChange,
+    required this.onSubmit,
   });
 
   late TextEditingController textController = TextEditingController();
   late Function onTextChange;
+  late Function onSubmit;
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.82;
@@ -27,9 +29,6 @@ class NeoTextField extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10.0),
               child: TextField(
                 controller: textController,
-                onSubmitted: (value) {
-                  textController.clear();
-                },
                 decoration: const InputDecoration(
                   fillColor: Colors.white,
                   hintText: 'Write a line ... ',
@@ -55,6 +54,9 @@ class NeoTextField extends StatelessWidget {
                 maxLines: null,
                 onChanged: (value) {
                   onTextChange(value);
+                },
+                onSubmitted: (value) {
+                  onSubmit(value);
                 },
               ),
             ),

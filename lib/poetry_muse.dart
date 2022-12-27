@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_language_id/google_mlkit_language_id.dart';
+import 'package:poetry_muse/components/findmeter.dart';
 import 'package:poetry_muse/components/neocard.dart';
 import 'package:poetry_muse/components/neodrawer.dart';
 import 'package:poetry_muse/components/neotextfield.dart';
@@ -94,13 +95,14 @@ class _PoetryMuseState extends State<PoetryMuse> {
     SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     return const Scaffold(
       backgroundColor: Colors.white,
-      // body: PoetryEditor(),
-      body: NeoCard(
-        height: 200,
-        width: 400,
-        title: "Do you really want to delete this line ?",
-        subTitle: "(you can always undo the changes)",
-      ),
+      body: PoetryEditor(),
+      // body: FindMeter(meter: "/ X / X / X / X / X /"),
+      // body: NeoCard(
+      //   height: 200,
+      //   width: 400,
+      //   title: "Do you really want to delete this line ?",
+      //   subTitle: "(you can always undo the changes)",
+      // ),
       // body: GestureDetector(
       //   onTap: () {
       //     FocusScope.of(context).unfocus();

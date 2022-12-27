@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:poetry_muse/api/api.dart';
 import 'package:poetry_muse/components/neobrutton.dart';
 import 'package:poetry_muse/components/neodrawer.dart';
 import 'package:poetry_muse/components/neotextfield.dart';
@@ -36,6 +38,14 @@ class _PoetryEditorState extends State<PoetryEditor>
   int statusIndex = 0;
 
   bool _anotherLine = false;
+
+  late String url;
+
+  late var data;
+
+  late List<String> meter = [""];
+  late int _meterIndex = -1;
+  String word = "";
 
   late double _scale;
   late AnimationController _controller;
@@ -105,6 +115,17 @@ class _PoetryEditorState extends State<PoetryEditor>
     });
   }
 
+  void findMetre() async {
+    data = await getMetre(url);
+    var decodedData = jsonDecode(data);
+    setState(() {
+      _meterIndex++;
+      meter.insert(_meterIndex, decodedData['meter']);
+    });
+    print(meter);
+    // displayMetre();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -129,53 +150,73 @@ class _PoetryEditorState extends State<PoetryEditor>
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            AnimatedList(
-              key: _myListKey,
-              controller: _scrollController,
-              shrinkWrap: true,
-              physics: const AlwaysScrollableScrollPhysics(),
-              initialItemCount: _linesTracker.length,
-              itemBuilder: (context, index, animation) {
-                temp_index = index;
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        statusIndex = index;
-                        _selectForEdit = _selectForEdit == _linesTracker[index]
-                            ? null
-                            : _linesTracker[index];
-                      });
-                      setState(() {
-                        _textController.text = _line[index];
-                        _textController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: _line[index].length),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  children: [
+                    AnimatedList(
+                      key: _myListKey,
+                      // controller: _scrollController,
+                      shrinkWrap: true,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      initialItemCount: _linesTracker.length,
+                      itemBuilder: (context, index, animation) {
+                        temp_index = index;
+                        return Column(
+                          children: [
+                            Text(meter[index]),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    statusIndex = index;
+                                    _selectForEdit =
+                                        _selectForEdit == _linesTracker[index]
+                                            ? null
+                                            : _linesTracker[index];
+                                  });
+                                  setState(() {
+                                    _textController.text = _line[index];
+                                    _textController.selection =
+                                        TextSelection.fromPosition(
+                                      TextPosition(offset: _line[index].length),
+                                    );
+                                  });
+                                  _anotherLine = false;
+                                  print(index);
+                                },
+                                child: NeoLineContainer(
+                                  selected:
+                                      _selectedItem == _linesTracker[index],
+                                  onTap: () {
+                                    // _selectedItem = _linesTracker[index];
+                                    // _remove(index);
+                                    setState(() {
+                                      _selectedItem =
+                                          _selectedItem == _linesTracker[index]
+                                              ? null
+                                              : _linesTracker[index];
+                                    });
+                                  },
+                                  line: _line[index],
+                                  toEdit:
+                                      _selectForEdit == _linesTracker[index],
+                                  needNewLine:
+                                      _selectForEdit == _linesTracker[index]
+                                          ? _anotherLine
+                                          : false,
+                                ),
+                              ),
+                            ),
+                          ],
                         );
-                      });
-                      _anotherLine = false;
-                      print(index);
-                    },
-                    child: NeoLineContainer(
-                      selected: _selectedItem == _linesTracker[index],
-                      onTap: () {
-                        // _selectedItem = _linesTracker[index];
-                        // _remove(index);
-                        setState(() {
-                          _selectedItem = _selectedItem == _linesTracker[index]
-                              ? null
-                              : _linesTracker[index];
-                        });
                       },
-                      line: _line[index],
-                      toEdit: _selectForEdit == _linesTracker[index],
-                      needNewLine: _selectForEdit == _linesTracker[index]
-                          ? _anotherLine
-                          : false,
                     ),
-                  ),
-                );
-              },
+                  ],
+                ),
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -185,6 +226,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                   onTextChange: (value) {
                     setState(() {
                       _line[statusIndex] = value;
+                      word = value;
                       counter = value.toString().length;
                       if (counter > 40) {
                         setState(() {
@@ -195,6 +237,14 @@ class _PoetryEditorState extends State<PoetryEditor>
                           _anotherLine = false;
                         });
                       }
+                    });
+                  },
+                  onSubmit: (value) {
+                    setState(() {
+                      url = 'http://127.0.0.1:5000/meter?lines=$word';
+                      findMetre();
+                      word = "";
+                      _textController.clear();
                     });
                   },
                 ),
