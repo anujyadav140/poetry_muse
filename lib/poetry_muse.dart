@@ -95,14 +95,14 @@ class _PoetryMuseState extends State<PoetryMuse> {
     SchedulerBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     return const Scaffold(
       backgroundColor: Colors.white,
-      // body:  PoetryEditor(),
+      body: PoetryEditor(),
       // body: FindMeter(meter: "/ X / X / X / X / X /"),
-      body: NeoCard(
-        height: 200,
-        width: 400,
-        title: "Do you really want to delete this line ?",
-        subTitle: "(you can always undo the changes)",
-      ),
+      // body: NeoCard(
+      //   height: 200,
+      //   width: 400,
+      //   title: "Do you really want to delete this line ?",
+      //   subTitle: "(you can always undo the changes)",
+      // ),
       // body: GestureDetector(
       //   onTap: () {
       //     FocusScope.of(context).unfocus();

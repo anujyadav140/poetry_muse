@@ -1,14 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:poetry_muse/api/api.dart';
 import 'package:poetry_muse/components/neobrutton.dart';
 import 'package:poetry_muse/components/neodrawer.dart';
+import 'package:poetry_muse/components/neoiconbutton.dart';
 import 'package:poetry_muse/components/neotextfield.dart';
+import 'package:poetry_muse/components/rive_display.dart';
 import 'package:rive/rive.dart';
+import 'package:circular_menu/circular_menu.dart';
+import 'package:english_words/english_words.dart';
 
+//403E3E
+//55
 class PoetryEditor extends StatefulWidget {
   const PoetryEditor({super.key});
 
@@ -50,6 +57,36 @@ class _PoetryEditorState extends State<PoetryEditor>
 
   late double _scale;
   late AnimationController _controller;
+  late StateMachineController? _riveController;
+  SMIInput<bool>? isClicked;
+
+  final circularMenu = CircularMenu(items: [
+    CircularMenuItem(
+        icon: Icons.home,
+        onTap: () {
+          // callback
+        }),
+    CircularMenuItem(
+        icon: Icons.search,
+        onTap: () {
+          //callback
+        }),
+    CircularMenuItem(
+        icon: Icons.settings,
+        onTap: () {
+          //callback
+        }),
+    CircularMenuItem(
+        icon: Icons.star,
+        onTap: () {
+          //callback
+        }),
+    CircularMenuItem(
+        icon: Icons.pages,
+        onTap: () {
+          //callback
+        }),
+  ]);
 
   bool isReorder = false;
   @override
@@ -127,13 +164,17 @@ class _PoetryEditorState extends State<PoetryEditor>
     // displayMetre();
   }
 
+  late int syllableCounter = 0;
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     var counter = 0;
-    var temp_index = 0;
+    String syllWord = "";
     return Scaffold(
+      // floatingActionButton: circularMenu,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       appBar: AppBar(
         title: AutoSizeText(
           "Poem Title ...",
@@ -152,57 +193,72 @@ class _PoetryEditorState extends State<PoetryEditor>
               bottomRight: Radius.circular(25),
               bottomLeft: Radius.circular(25)),
         ),
-        leading: const Icon(
-          Icons.apps_sharp,
-          color: Colors.black,
+        leading: GestureDetector(
+          onTap: () {
+            if (isClicked == null) return;
+
+            final isClick = isClicked?.value ?? false;
+
+            isClicked?.change(!isClick);
+          },
+          child: SizedBox(
+            width: 200,
+            height: 200,
+            child: DisplayRive(
+              rive: RiveAnimation.asset(
+                'assets/simple_menu.riv',
+                fit: BoxFit.fill,
+                antialiasing: false,
+                stateMachines: const ['State Machine 1'],
+                onInit: (artboard) {
+                  _riveController = StateMachineController.fromArtboard(
+                      artboard, "State Machine 1");
+                  if (_riveController == null) return;
+                  artboard.addController(_riveController!);
+                  isClicked = _riveController?.findInput<bool>("Hover/Press");
+                },
+              ),
+              riveHeight: 100,
+              riveWidth: 100,
+            ),
+          ),
         ),
         actions: [
-          IconButton(
-            icon: NeoBrutton(
-              onPress: () {
+          NeoIconButton(
+            iconButton: Icon(
+              Icons.ac_unit,
+              color: _line.first == "" ? Colors.grey : Colors.black,
+              size: 25,
+            ),
+            iconFunction: () {
+              if (_line.first == "") {
+                print("x");
+              } else {
                 setState(() {
-                  for (var i = 0; i < _line.length - 1; i++) {
+                  for (var i = 0; i < _line.length; i++) {
                     url = 'http://127.0.0.1:5000/meter?lines=${_line[i]}';
                     findMetre();
                   }
                 });
-              },
-              buttonHeight: 100,
-              buttonWidth: 100,
-              isCircle: false,
-              buttonIcon: const Icon(
-                Icons.ac_unit,
-                size: 60,
-                color: Colors.black,
-              ),
-              isIcon: true,
-            ),
-            tooltip: 'Comment Icon',
-            onPressed: () {
-              setState(() {
-                for (var i = 0; i < _line.length; i++) {
-                  url = 'http://127.0.0.1:5000/meter?lines=${_line[i]}';
-                  findMetre();
-                }
-              });
+              }
             },
           ),
-          IconButton(
-            icon: NeoBrutton(
-              onPress: () {},
-              buttonHeight: 100,
-              buttonWidth: 100,
-              isCircle: false,
-              buttonIcon: const Icon(
-                Icons.account_tree,
-                size: 60,
-                color: Colors.black,
-              ),
-              isIcon: true,
+          NeoIconButton(
+            iconButton: Icon(
+              Icons.account_tree,
+              color: _line.first == "" ? Colors.grey : Colors.black,
+              size: 25,
             ),
-            tooltip: 'Setting Icon',
-            onPressed: () {},
-          ), //IconButton
+            iconFunction: () {},
+          ),
+          NeoIconButton(
+            iconButton: Icon(
+              Icons.add_box_rounded,
+              color: _line.first == "" ? Colors.grey : Colors.black,
+              size: 25,
+            ),
+            iconFunction: () {},
+          ),
         ],
       ),
       body: Stack(
@@ -232,7 +288,6 @@ class _PoetryEditorState extends State<PoetryEditor>
                   physics: const AlwaysScrollableScrollPhysics(),
                   initialItemCount: _linesTracker.length,
                   itemBuilder: (context, index, animation) {
-                    temp_index = index;
                     return SingleChildScrollView(
                       controller: _scrollController,
                       scrollDirection: Axis.vertical,
@@ -280,6 +335,12 @@ class _PoetryEditorState extends State<PoetryEditor>
                               ),
                             ),
                           ),
+                          Visibility(
+                            visible: true,
+                            child: SizedBox(
+                                child:
+                                    Text("Syllable Count: $syllableCounter")),
+                          ),
                         ],
                       ),
                     );
@@ -306,12 +367,30 @@ class _PoetryEditorState extends State<PoetryEditor>
                         }
                       });
                     },
-                    onSubmit: (value) {},
+                    onSubmit: (value) {
+                      setState(() {
+                        // _line[_line.length - 1] = value;
+                        if (value.toString().isNotEmpty) {
+                          syllWord = value;
+                          const passwordSpecialCharacters = r'[^\w\s]';
+                          const whiteSpace = r'\s+';
+
+                          syllWord = syllWord.replaceAll(
+                              RegExp(passwordSpecialCharacters), '');
+        
+                          syllWord =
+                              syllWord.replaceAll(RegExp(whiteSpace), '');
+                          syllableCounter = syllables(syllWord);
+                          print(syllableCounter);
+                        }
+                      });
+                    },
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 25),
                     child: NeoBrutton(
                       onPress: () {
+                        circularMenu;
                         _insert();
                         _textController.clear();
                       },

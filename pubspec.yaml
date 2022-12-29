@@ -39,7 +39,7 @@ dependencies:
   google_fonts: ^3.0.1
   lottie: ^2.1.0
   convex_bottom_bar: ^3.1.0+1
-
+  circular_menu: ^2.0.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -72,8 +72,10 @@ flutter:
   assets:
   - assets/empty_robot.riv
   - assets/empty-robot.riv
-  - assets/puppy.riv
   - assets/question.json
+  - assets/simple_menu.riv
+  - assets/add_icon.riv
+  - assets/hamburger_menu.riv
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

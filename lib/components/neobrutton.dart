@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:poetry_muse/components/rive_display.dart';
+import 'package:rive/rive.dart';
 
 // ignore: must_be_immutable
 class NeoBrutton extends StatefulWidget {
@@ -13,11 +14,6 @@ class NeoBrutton extends StatefulWidget {
     this.buttonName = '',
     this.buttonHeight = 50,
     this.buttonWidth = 50,
-    this.buttonIcon = const Icon(
-      Icons.view_carousel_outlined,
-      size: 70,
-      color: Colors.black,
-    ),
   });
   late VoidCallback onPress;
   late bool isCircle;
@@ -25,7 +21,6 @@ class NeoBrutton extends StatefulWidget {
   late String buttonName;
   late double buttonHeight;
   late double buttonWidth;
-  late Icon buttonIcon;
   @override
   State<NeoBrutton> createState() => _NeoBruttonState();
 }
@@ -34,6 +29,10 @@ class _NeoBruttonState extends State<NeoBrutton>
     with SingleTickerProviderStateMixin {
   late double _scale;
   late AnimationController _controller;
+
+  StateMachineController? _riveController;
+
+  SMIInput<bool>? isClicked;
 
   @override
   void initState() {
@@ -99,10 +98,7 @@ class _NeoBruttonState extends State<NeoBrutton>
                   ),
                 ]),
             child: OutlinedButton(
-              onPressed: () {
-                _controller.forward();
-                widget.onPress();
-              },
+              onPressed: () {},
               style: ButtonStyle(
                 side: MaterialStatePropertyAll(
                     BorderSide(width: widget.isCircle ? 1.5 : 0.5)),
@@ -116,7 +112,34 @@ class _NeoBruttonState extends State<NeoBrutton>
                         borderRadius: BorderRadius.all(Radius.circular(20)))),
               ),
               child: widget.isIcon
-                  ? widget.buttonIcon
+                  ? IconButton(
+                      iconSize: 100,
+                      icon: DisplayRive(
+                        rive: RiveAnimation.asset(
+                          'assets/add_icon.riv',
+                          fit: BoxFit.cover,
+                          stateMachines: const ['State Machine 1'],
+                          onInit: (artboard) {
+                            _riveController =
+                                StateMachineController.fromArtboard(
+                                    artboard, "State Machine 1");
+                            if (_riveController == null) return;
+                            artboard.addController(_riveController!);
+                            isClicked =
+                                _riveController?.findInput<bool>("Pressed");
+                          },
+                        ),
+                        riveHeight: 100,
+                        riveWidth: 100,
+                      ),
+                      onPressed: () {
+                        _controller.forward();
+                        widget.onPress();
+                        if (isClicked == null) return;
+                        final isClick = isClicked?.value ?? false;
+                        isClicked?.change(!isClick);
+                      },
+                    )
                   : Text(
                       widget.buttonName,
                       style: GoogleFonts.farro(
