@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:poetry_muse/api/api.dart';
 import 'package:poetry_muse/components/neobrutton.dart';
@@ -44,6 +45,7 @@ class _PoetryEditorState extends State<PoetryEditor>
   late int _nextItem;
 
   int statusIndex = 0;
+  int newLineIndex = 0;
 
   bool _anotherLine = false;
 
@@ -89,6 +91,11 @@ class _PoetryEditorState extends State<PoetryEditor>
   ]);
 
   bool isReorder = false;
+
+  bool isNewLineEdit = false;
+
+  bool isOldLineEdit = false;
+
   @override
   void initState() {
     _controller = AnimationController(
@@ -164,14 +171,29 @@ class _PoetryEditorState extends State<PoetryEditor>
     // displayMetre();
   }
 
+  String syllWord = "";
   late int syllableCounter = 0;
+  late List<int> syllableList = [0];
+  void countSyllables(String value) {
+    if (value.trim().isNotEmpty) {
+      syllWord = value;
+      const passwordSpecialCharacters = r'[^\w\s]';
+      const whiteSpace = r'\s+';
+
+      syllWord = syllWord.replaceAll(RegExp(passwordSpecialCharacters), '');
+
+      syllWord = syllWord.replaceAll(RegExp(whiteSpace), '');
+      syllableCounter = syllables(syllWord);
+      print(syllableCounter);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    var focusNode = FocusNode();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     var counter = 0;
-    String syllWord = "";
     return Scaffold(
       // floatingActionButton: circularMenu,
       // floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
@@ -196,9 +218,7 @@ class _PoetryEditorState extends State<PoetryEditor>
         leading: GestureDetector(
           onTap: () {
             if (isClicked == null) return;
-
             final isClick = isClicked?.value ?? false;
-
             isClicked?.change(!isClick);
           },
           child: SizedBox(
@@ -288,6 +308,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                   physics: const AlwaysScrollableScrollPhysics(),
                   initialItemCount: _linesTracker.length,
                   itemBuilder: (context, index, animation) {
+                    newLineIndex = index;
                     return SingleChildScrollView(
                       controller: _scrollController,
                       scrollDirection: Axis.vertical,
@@ -298,6 +319,8 @@ class _PoetryEditorState extends State<PoetryEditor>
                             child: GestureDetector(
                               onTap: () {
                                 setState(() {
+                                  isOldLineEdit = true;
+                                  isNewLineEdit = false;
                                   statusIndex = index;
                                   _selectForEdit =
                                       _selectForEdit == _linesTracker[index]
@@ -312,7 +335,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                                   );
                                 });
                                 _anotherLine = false;
-                                print(index);
+                                // print(index);
                               },
                               child: NeoLineContainer(
                                 selected: _selectedItem == _linesTracker[index],
@@ -350,46 +373,50 @@ class _PoetryEditorState extends State<PoetryEditor>
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  NeoTextField(
-                    textController: _textController,
-                    onTextChange: (value) {
-                      setState(() {
-                        _line[statusIndex] = value;
-                        counter = value.toString().length;
-                        if (counter > 40) {
-                          setState(() {
-                            _anotherLine = true;
-                          });
-                        } else if (counter < 40) {
-                          setState(() {
-                            _anotherLine = false;
-                          });
-                        }
-                      });
+                  RawKeyboardListener(
+                    focusNode: focusNode,
+                    onKey: (event) {
+                      if (event.isKeyPressed(LogicalKeyboardKey.space) ||
+                          event.isKeyPressed(LogicalKeyboardKey.backspace)) {
+                        countSyllables(syllWord);
+                      }
                     },
-                    onSubmit: (value) {
-                      setState(() {
-                        // _line[_line.length - 1] = value;
-                        if (value.toString().isNotEmpty) {
-                          syllWord = value;
-                          const passwordSpecialCharacters = r'[^\w\s]';
-                          const whiteSpace = r'\s+';
-
-                          syllWord = syllWord.replaceAll(
-                              RegExp(passwordSpecialCharacters), '');
-        
-                          syllWord =
-                              syllWord.replaceAll(RegExp(whiteSpace), '');
-                          syllableCounter = syllables(syllWord);
-                          print(syllableCounter);
-                        }
-                      });
-                    },
+                    child: NeoTextField(
+                      textController: _textController,
+                      onTextChange: (value) {
+                        syllWord = value;
+                        setState(() {
+                          isNewLineEdit
+                              ? _line[newLineIndex] = value
+                              : _line[statusIndex] = value;
+                          counter = value.toString().length;
+                          if (counter > 40) {
+                            setState(() {
+                              _anotherLine = true;
+                            });
+                          } else if (counter < 40) {
+                            setState(() {
+                              _anotherLine = false;
+                            });
+                          }
+                        });
+                      },
+                      onSubmit: (value) {
+                        setState(() {
+                          countSyllables(value);
+                        });
+                      },
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 25),
                     child: NeoBrutton(
                       onPress: () {
+                        isNewLineEdit = true;
+                        isOldLineEdit = false;
+                        setState(() {
+                          _selectForEdit = newLineIndex++;
+                        });
                         circularMenu;
                         _insert();
                         _textController.clear();
