@@ -309,7 +309,10 @@ class _PoetryEditorState extends State<PoetryEditor>
                     controller: _dragController,
                     builder: (context, scrollController) {
                       return SingleChildScrollView(
-                          controller: scrollController, child: Result());
+                          controller: scrollController,
+                          child: Result(
+                            lines: _line,
+                          ));
                     },
                   );
                 },

@@ -1,19 +1,70 @@
+import 'dart:convert';
+import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:poetry_muse/api/api.dart';
 
-class Result extends StatelessWidget {
-  Result({super.key});
-  final List<String> lines = [
-    "to be or not to be that is the question",
-    "shall i compare thee to a summer's day?",
-    "to be or not to be that is the question",
-    "shall i compare thee to a summer's day?",
-    "to be or not to be that is the question",
-    "shall i compare thee to a summer's day?",
-    "to be or not to be that is the question",
-    "shall i compare thee to a summer's day?",
-  ];
-  // final List<String> lines;
-  void result() {}
+class Result extends StatefulWidget {
+  List<String> lines;
+  Result({super.key, required this.lines});
+  @override
+  State<Result> createState() => _ResultState();
+}
+
+class _ResultState extends State<Result> {
+  @override
+  void initState() {
+    calculateTotalSyllables();
+    findMetre();
+    super.initState();
+  }
+
+  String syllWord = "";
+
+  late int syllableCounter = 0;
+
+  late List<int> syllableList = [];
+
+  int syllableIndex = 0;
+
+  countSyllables(String value) {
+    if (value.trim().isNotEmpty) {
+      syllWord = value;
+      const passwordSpecialCharacters = r'[^\w\s]';
+      const whiteSpace = r'\s+';
+
+      syllWord = syllWord.replaceAll(RegExp(passwordSpecialCharacters), '');
+
+      syllWord = syllWord.replaceAll(RegExp(whiteSpace), '');
+      syllableCounter = syllables(syllWord);
+      return syllableCounter;
+    } else {
+      return 0;
+    }
+  }
+
+  calculateTotalSyllables() {
+    for (var l in widget.lines) {
+      setState(() {
+        syllableList.add(countSyllables(l));
+      });
+    }
+    print(syllableList);
+  }
+
+  late var data;
+  late String url;
+  late List<String> meter = [];
+  void findMetre() async {
+    for (var i = 0; i < widget.lines.length; i++) {
+      url = 'http://127.0.0.1:5000/meter?lines=${widget.lines[i]}';
+      data = await getMetre(url);
+      var decodedData = jsonDecode(data);
+      setState(() {
+        meter.add(decodedData['meter']);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -21,17 +72,23 @@ class Result extends StatelessWidget {
         width: 500,
         height: 700,
         child: Card(
-          color: Colors.amber[50],
-          child: Column(
-            children: [
-              for (var i in lines)
-                SizedBox(
-                  height: 50,
-                  child: Text(i),
-                ),
-            ],
-          ),
-        ),
+            color: Colors.amber[50],
+            child: ListView.builder(
+              itemCount: widget.lines.length - 1,
+              itemBuilder: (context, index) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.lines[index]),
+                      Text('Meter: ${meter[index]}'),
+                      Text('Syllables: ${syllableList[index]}'),
+                    ],
+                  ),
+                );
+              },
+            )),
       ),
     );
   }
