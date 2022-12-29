@@ -1,12 +1,12 @@
 import 'package:appinio_swiper/appinio_swiper.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:poetry_muse/utilities/card.dart';
 
 // ignore: must_be_immutable
 class SwipePoetryCard extends StatelessWidget {
   SwipePoetryCard({super.key});
   List<Container> cards = [
+    // ignore: avoid_unnecessary_containers
     Container(
       child: const PoetryCard(),
     ),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +12,7 @@ import 'package:poetry_muse/components/neodrawer.dart';
 import 'package:poetry_muse/components/neoiconbutton.dart';
 import 'package:poetry_muse/components/neotextfield.dart';
 import 'package:poetry_muse/components/rive_display.dart';
+import 'package:poetry_muse/pages/poetry_analysis.dart';
 import 'package:rive/rive.dart';
 import 'package:circular_menu/circular_menu.dart';
 import 'package:english_words/english_words.dart';
@@ -27,8 +29,9 @@ class PoetryEditor extends StatefulWidget {
 class _PoetryEditorState extends State<PoetryEditor>
     with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
-
-  final List<int> _linesTracker = [0];
+  final DraggableScrollableController _dragController =
+      DraggableScrollableController();
+  final List<int> _linesTracker = [-1];
 
   final List<String> _line = [""];
 
@@ -51,13 +54,13 @@ class _PoetryEditorState extends State<PoetryEditor>
 
   late String url;
 
+  // ignore: prefer_typing_uninitialized_variables
   late var data;
 
   late List<String> meter = [""];
   late int _meterIndex = -1;
   List<String> word = [""];
 
-  late double _scale;
   late AnimationController _controller;
   late StateMachineController? _riveController;
   SMIInput<bool>? isClicked;
@@ -95,6 +98,10 @@ class _PoetryEditorState extends State<PoetryEditor>
   bool isNewLineEdit = false;
 
   bool isOldLineEdit = false;
+
+  bool syllableAlreadyCalculated = false;
+
+  bool result = false;
 
   @override
   void initState() {
@@ -141,9 +148,9 @@ class _PoetryEditorState extends State<PoetryEditor>
     });
   }
 
+  // ignore: unused_element
   void _remove(int index) {
     setState(() {
-      print(index);
       int removeIndex = _linesTracker.indexOf(
           _selectedItem!); // Use the selected item to determine the index of the item to remove.
       _line.removeAt(removeIndex);
@@ -167,14 +174,14 @@ class _PoetryEditorState extends State<PoetryEditor>
       _meterIndex++;
       meter.insert(_meterIndex, decodedData['meter']);
     });
-    print(meter);
     // displayMetre();
   }
 
   String syllWord = "";
   late int syllableCounter = 0;
   late List<int> syllableList = [0];
-  void countSyllables(String value) {
+  int syllableIndex = 0;
+  countSyllables(String value) {
     if (value.trim().isNotEmpty) {
       syllWord = value;
       const passwordSpecialCharacters = r'[^\w\s]';
@@ -184,15 +191,22 @@ class _PoetryEditorState extends State<PoetryEditor>
 
       syllWord = syllWord.replaceAll(RegExp(whiteSpace), '');
       syllableCounter = syllables(syllWord);
-      print(syllableCounter);
+      return syllableCounter;
     }
+  }
+
+  calculateTotalSyllables() {
+    if (!syllableAlreadyCalculated) {
+      for (var i = 0; i < _line.length - 1; i++) {
+        syllableList.add(countSyllables(_line[i].toString()));
+      }
+    }
+    print(syllableList);
   }
 
   @override
   Widget build(BuildContext context) {
     var focusNode = FocusNode();
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
     var counter = 0;
     return Scaffold(
       // floatingActionButton: circularMenu,
@@ -252,7 +266,6 @@ class _PoetryEditorState extends State<PoetryEditor>
             ),
             iconFunction: () {
               if (_line.first == "") {
-                print("x");
               } else {
                 setState(() {
                   for (var i = 0; i < _line.length; i++) {
@@ -277,7 +290,31 @@ class _PoetryEditorState extends State<PoetryEditor>
               color: _line.first == "" ? Colors.grey : Colors.black,
               size: 25,
             ),
-            iconFunction: () {},
+            iconFunction: () {
+              calculateTotalSyllables();
+              syllableAlreadyCalculated = true;
+            },
+          ),
+          NeoIconButton(
+            iconButton: Icon(
+              Icons.abc,
+              color: _line.first == "" ? Colors.grey : Colors.black,
+              size: 25,
+            ),
+            iconFunction: () {
+              showCupertinoModalPopup(
+                context: context,
+                builder: (context) {
+                  return DraggableScrollableSheet(
+                    controller: _dragController,
+                    builder: (context, scrollController) {
+                      return SingleChildScrollView(
+                          controller: scrollController, child: Result());
+                    },
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
@@ -294,6 +331,14 @@ class _PoetryEditorState extends State<PoetryEditor>
           //       antialiasing: false,
           //       alignment: Alignment.center,
           //       stateMachines: ['Emptiness'],
+          //     ),
+          //   ),
+          // ),
+          // Visibility(
+          //   visible: result,
+          //   child: Center(
+          //     child: SizedBox(
+          //       child: Result(lines: _line),
           //     ),
           //   ),
           // ),
@@ -361,8 +406,8 @@ class _PoetryEditorState extends State<PoetryEditor>
                           Visibility(
                             visible: true,
                             child: SizedBox(
-                                child:
-                                    Text("Syllable Count: $syllableCounter")),
+                              child: Text("Syllable Count: $syllableCounter"),
+                            ),
                           ),
                         ],
                       ),
@@ -388,7 +433,9 @@ class _PoetryEditorState extends State<PoetryEditor>
                         setState(() {
                           isNewLineEdit
                               ? _line[newLineIndex] = value
-                              : _line[statusIndex] = value;
+                              : isOldLineEdit
+                                  ? _line[statusIndex] = value
+                                  : _line[newLineIndex] = value;
                           counter = value.toString().length;
                           if (counter > 40) {
                             setState(() {
@@ -401,11 +448,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                           }
                         });
                       },
-                      onSubmit: (value) {
-                        setState(() {
-                          countSyllables(value);
-                        });
-                      },
+                      onSubmit: (value) {},
                     ),
                   ),
                   Padding(
@@ -420,6 +463,8 @@ class _PoetryEditorState extends State<PoetryEditor>
                         circularMenu;
                         _insert();
                         _textController.clear();
+                        syllableList = [0];
+                        syllableAlreadyCalculated = false;
                       },
                     ),
                   ),

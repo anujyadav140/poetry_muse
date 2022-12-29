@@ -11,10 +11,12 @@ import 'package:poetry_muse/components/neodrawer.dart';
 import 'package:poetry_muse/components/neotextfield.dart';
 import 'package:poetry_muse/drawer.dart';
 import 'package:poetry_muse/components/neobrutton.dart';
+import 'package:poetry_muse/pages/poetry_analysis.dart';
 import 'package:poetry_muse/pages/poetry_editor.dart';
 import 'package:poetry_muse/reorder_lines.dart';
 import 'package:english_words/english_words.dart';
 import 'package:poetry_muse/swipe_card.dart';
+import 'package:poetry_muse/utilities/card.dart';
 
 class PoetryMuse extends StatefulWidget {
   const PoetryMuse({super.key});
@@ -96,6 +98,7 @@ class _PoetryMuseState extends State<PoetryMuse> {
     return const Scaffold(
       backgroundColor: Colors.white,
       body: PoetryEditor(),
+      // body: Result(),
       // body: FindMeter(meter: "/ X / X / X / X / X /"),
       // body: NeoCard(
       //   height: 200,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
 
 // ignore: must_be_immutable
 class NeoTextField extends StatelessWidget {

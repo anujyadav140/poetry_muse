@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class NeoIconButton extends StatelessWidget {
   final Icon iconButton;
-  final Function iconFunction;
+  final VoidCallback iconFunction;
   const NeoIconButton(
       {super.key, required this.iconButton, required this.iconFunction});
 
@@ -12,7 +12,7 @@ class NeoIconButton extends StatelessWidget {
       padding: const EdgeInsets.only(right: 20.0),
       child: IconButton(
         icon: iconButton,
-        onPressed: () {},
+        onPressed: iconFunction,
       ),
     );
   }

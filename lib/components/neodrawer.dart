@@ -25,8 +25,7 @@ class NeoLineContainer extends StatelessWidget {
     if (selected) {
       targetValue = 50.0;
     }
-    double _width = MediaQuery.of(context).size.width;
-    double _height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return TweenAnimationBuilder(
         duration: const Duration(milliseconds: 500),
         tween: Tween<double>(begin: 0, end: targetValue),
@@ -60,7 +59,7 @@ class NeoLineContainer extends StatelessWidget {
               Transform.scale(
                 scale: toEdit ? 0.99 : 1,
                 child: Container(
-                  width: _width,
+                  width: width,
                   height: needNewLine ? 100.0 : 50.0,
                   decoration: BoxDecoration(
                     color: toEdit
@@ -86,7 +85,7 @@ class NeoLineContainer extends StatelessWidget {
                     children: [
                       line.isNotEmpty
                           ? SizedBox(
-                              width: _width - 60,
+                              width: width - 60,
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: AutoSizeText(

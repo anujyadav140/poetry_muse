@@ -40,7 +40,6 @@ class _PoemAnalysisDrawerState extends State<PoemAnalysisDrawer>
 
   @override
   void initState() {
-    print(valueIndex);
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -74,13 +73,7 @@ class _PoemAnalysisDrawerState extends State<PoemAnalysisDrawer>
       targetValue = targetValue == 0.0 ? widget.listHeight : 0.0;
     });
     valueIndex = widget.index;
-    _check(valueIndex);
     _controller.forward();
-  }
-
-  void _check(int value) {
-    var x = value;
-    print(x);
   }
 
   @override
