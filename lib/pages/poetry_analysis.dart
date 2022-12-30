@@ -15,8 +15,11 @@ class _ResultState extends State<Result> {
   void initState() {
     calculateTotalSyllables();
     findMetre();
+    findForm();
     super.initState();
   }
+
+  List<String> combined = [];
 
   String syllWord = "";
 
@@ -48,7 +51,6 @@ class _ResultState extends State<Result> {
         syllableList.add(countSyllables(l));
       });
     }
-    print(syllableList);
   }
 
   late var data;
@@ -62,6 +64,10 @@ class _ResultState extends State<Result> {
       setState(() {
         meter.add(decodedData['meter']);
       });
+    }
+
+    String combineLines(List<String> lines) {
+      return lines.join('\n');
     }
   }
 
@@ -82,17 +88,21 @@ class _ResultState extends State<Result> {
                         itemCount: widget.lines.length - 1,
                         itemBuilder: (context, index) {
                           return ListTile(
-                            title: Text(
-                              widget.lines[index],
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(
-                              meter[index],
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          );
+                              title: Text(
+                                widget.lines[index],
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                meter[index],
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              trailing: Text(
+                                syllableList[index].toString(),
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ));
                         });
                   } else {
                     return const Center(
@@ -102,5 +112,16 @@ class _ResultState extends State<Result> {
                 })),
       ),
     );
+  }
+
+  // List<dynamic> form = [];
+  void findForm() async {
+    url = 'http://127.0.0.1:5000/analysis';
+    data = await postForm(url, jsonEncode(widget.lines));
+    var decodeData = jsonDecode(data);
+    setState(() {
+      var form = decodeData['form'];
+      print(form);
+    });
   }
 }
