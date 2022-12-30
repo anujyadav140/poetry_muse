@@ -71,50 +71,92 @@ class _ResultState extends State<Result> {
     }
   }
 
+  bool toggleAnalysis = false;
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 500,
-        height: 700,
-        child: Card(
-            color: Colors.amber[50],
-            child: FutureBuilder(
-                future: getMetre(url),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      meter.length == widget.lines.length) {
-                    return ListView.builder(
-                        itemCount: widget.lines.length - 1,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                              title: Text(
-                                widget.lines[index],
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Text(
-                                meter[index],
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              trailing: Text(
-                                syllableList[index].toString(),
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ));
-                        });
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                })),
-      ),
+    return SizedBox(
+      width: 500,
+      height: 700,
+      child: Card(
+          color: Colors.amber[50],
+          child: FutureBuilder(
+              future: toggleAnalysis ? postForm(url, data) : getMetre(url),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    meter.length == widget.lines.length) {
+                  return Column(children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          toggleAnalysis ? 'Poem Results' : 'Poetry Analysis',
+                          style: const TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            setState(() {
+                              toggleAnalysis = !toggleAnalysis;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                    toggleAnalysis
+                        ? Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                    "Closest metre: ${formData["Closest metre"]}"),
+                                Text(
+                                    "Closest rhyme: ${formData["Closest rhyme"]}"),
+                                Text(
+                                    "Closest rhyme scheme: ${formData["Rhyme scheme"]}"),
+                                Text(
+                                    "Closest stanza type: ${formData["Closest stanza type"]}"),
+                                Text(
+                                    "Closest stanza length: ${formData["Stanza lengths"]}"),
+                              ],
+                            ),
+                          )
+                        : Expanded(
+                            child: ListView.builder(
+                                itemCount: widget.lines.length - 1,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                      title: Text(
+                                        widget.lines[index],
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      subtitle: Text(
+                                        meter[index],
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      trailing: Text(
+                                        syllableList[index].toString(),
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold),
+                                      ));
+                                }),
+                          ),
+                  ]);
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              })),
     );
   }
 
-  // List<dynamic> form = [];
+  Map<String, String> formData = {};
   void findForm() async {
     url = 'http://127.0.0.1:5000/analysis';
     data = await postForm(url, jsonEncode(widget.lines));
@@ -122,6 +164,9 @@ class _ResultState extends State<Result> {
     setState(() {
       var form = decodeData['form'];
       print(form);
+      form.forEach((key, value) {
+        formData[key] = value;
+      });
     });
   }
 }
