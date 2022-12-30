@@ -73,22 +73,32 @@ class _ResultState extends State<Result> {
         height: 700,
         child: Card(
             color: Colors.amber[50],
-            child: ListView.builder(
-              itemCount: widget.lines.length - 1,
-              itemBuilder: (context, index) {
-                return Container(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.lines[index]),
-                      Text('Meter: ${meter[index]}'),
-                      Text('Syllables: ${syllableList[index]}'),
-                    ],
-                  ),
-                );
-              },
-            )),
+            child: FutureBuilder(
+                future: getMetre(url),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount: widget.lines.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(
+                              widget.lines[index],
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(
+                              meter[index],
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        });
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                })),
       ),
     );
   }
