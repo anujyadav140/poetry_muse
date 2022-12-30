@@ -76,9 +76,10 @@ class _ResultState extends State<Result> {
             child: FutureBuilder(
                 future: getMetre(url),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      meter.length == widget.lines.length) {
                     return ListView.builder(
-                        itemCount: widget.lines.length,
+                        itemCount: widget.lines.length - 1,
                         itemBuilder: (context, index) {
                           return ListTile(
                             title: Text(
