@@ -100,8 +100,8 @@ class _NeoBruttonState extends State<NeoBrutton>
             child: OutlinedButton(
               onPressed: () {},
               style: ButtonStyle(
-                side: MaterialStatePropertyAll(
-                    BorderSide(width: widget.isCircle ? 1.5 : 0.5)),
+                // side: MaterialStatePropertyAll(
+                //     BorderSide(width: widget.isCircle ? 1.5 : 0.5)),
                 surfaceTintColor: const MaterialStatePropertyAll(Colors.red),
                 shadowColor: const MaterialStatePropertyAll(Colors.black54),
                 padding: const MaterialStatePropertyAll(EdgeInsets.all(20.0)),

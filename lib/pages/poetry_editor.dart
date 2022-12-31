@@ -291,7 +291,7 @@ class _PoetryEditorState extends State<PoetryEditor>
               size: 25,
             ),
             iconFunction: () {
-              calculateTotalSyllables();
+              // calculateTotalSyllables();
               syllableAlreadyCalculated = true;
             },
           ),
@@ -383,20 +383,30 @@ class _PoetryEditorState extends State<PoetryEditor>
                                   );
                                 });
                                 _anotherLine = false;
-                                // print(index);
+                                setState(() {
+                                  print(_line[index]);
+                                  print(countSyllables(_line[index]));
+                                  if (_line[index] == "") {
+                                    syllableCounter = 0;
+                                  } else {
+                                    syllableCounter =
+                                        countSyllables(_line[index]);
+                                  }
+                                });
                               },
                               child: NeoLineContainer(
+                                syllables: syllableCounter,
                                 selected: _selectedItem == _linesTracker[index],
-                                onTap: () {
-                                  // _selectedItem = _linesTracker[index];
-                                  // _remove(index);
-                                  setState(() {
-                                    _selectedItem =
-                                        _selectedItem == _linesTracker[index]
-                                            ? null
-                                            : _linesTracker[index];
-                                  });
-                                },
+                                // onTap: () {
+                                //   // _selectedItem = _linesTracker[index];
+                                //   // _remove(index);
+                                //   setState(() {
+                                //     _selectedItem =
+                                //         _selectedItem == _linesTracker[index]
+                                //             ? null
+                                //             : _linesTracker[index];
+                                //   });
+                                // },
                                 line: _line[index],
                                 toEdit: _selectForEdit == _linesTracker[index],
                                 needNewLine:
@@ -406,12 +416,12 @@ class _PoetryEditorState extends State<PoetryEditor>
                               ),
                             ),
                           ),
-                          Visibility(
-                            visible: true,
-                            child: SizedBox(
-                              child: Text("Syllable Count: $syllableCounter"),
-                            ),
-                          ),
+                          // Visibility(
+                          //   visible: true,
+                          //   child: SizedBox(
+                          //     child: Text("Syllable Count: $syllableCounter"),
+                          //   ),
+                          // ),
                         ],
                       ),
                     );

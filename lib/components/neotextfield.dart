@@ -17,7 +17,7 @@ class NeoTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width * 0.82;
     return Container(
-      height: 100,
+      // height: 100,
       width: width,
       alignment: Alignment.bottomCenter,
       margin: const EdgeInsets.only(left: 5, right: 5),
