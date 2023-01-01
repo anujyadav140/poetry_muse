@@ -31,7 +31,7 @@ class _PoetryEditorState extends State<PoetryEditor>
   final ScrollController _scrollController = ScrollController();
   final DraggableScrollableController _dragController =
       DraggableScrollableController();
-  final List<int> _linesTracker = [-1];
+  final List<int> _linesTracker = [0];
 
   final List<String> _line = [""];
 
@@ -413,6 +413,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                                     _selectForEdit == _linesTracker[index]
                                         ? _anotherLine
                                         : false,
+                                newLine: _selectForEdit == newLineIndex++,
                               ),
                             ),
                           ),
@@ -445,10 +446,10 @@ class _PoetryEditorState extends State<PoetryEditor>
                         syllWord = value;
                         setState(() {
                           isNewLineEdit
-                              ? _line[newLineIndex] = value
+                              ? _line[indexTracker] = value
                               : isOldLineEdit
                                   ? _line[statusIndex] = value
-                                  : _line[newLineIndex] = value;
+                                  : _line[indexTracker] = value;
                           counter = value.toString().length;
                           if (counter > 40) {
                             setState(() {
@@ -472,6 +473,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                         isOldLineEdit = false;
                         setState(() {
                           _selectForEdit = newLineIndex++;
+                          print(newLineIndex);
                         });
                         circularMenu;
                         _insert();

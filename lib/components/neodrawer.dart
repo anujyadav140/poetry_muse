@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class NeoLineContainer extends StatefulWidget {
-  const NeoLineContainer({
+  NeoLineContainer({
     super.key,
     this.selected = false,
     required this.line,
     required this.toEdit,
     this.needNewLine = false,
     required this.syllables,
+    required this.newLine,
   });
 
   final bool selected;
-  final bool toEdit;
+  bool toEdit;
+  final bool newLine;
   final String line;
   final bool needNewLine;
   final int? syllables;
@@ -27,6 +29,7 @@ class _NeoLineContainerState extends State<NeoLineContainer> {
   late int syllable;
   @override
   void initState() {
+    widget.toEdit = true;
     super.initState();
   }
 
