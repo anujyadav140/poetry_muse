@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:poetry_muse/api/api.dart';
 import 'package:poetry_muse/components/neobrutton.dart';
 import 'package:poetry_muse/components/neodrawer.dart';
@@ -31,7 +33,7 @@ class _PoetryEditorState extends State<PoetryEditor>
   final ScrollController _scrollController = ScrollController();
   final DraggableScrollableController _dragController =
       DraggableScrollableController();
-  final List<int> _linesTracker = [0];
+  final List<int> _linesTracker = [-1];
 
   final List<String> _line = [""];
 
@@ -103,6 +105,9 @@ class _PoetryEditorState extends State<PoetryEditor>
 
   bool result = false;
 
+  bool startToWrite = false;
+
+  bool toFindSyllables = false;
   @override
   void initState() {
     _controller = AnimationController(
@@ -124,8 +129,9 @@ class _PoetryEditorState extends State<PoetryEditor>
           });
         }
       });
-    super.initState();
     _nextItem = 1;
+    startToWrite = false;
+    super.initState();
   }
 
   @override
@@ -206,6 +212,8 @@ class _PoetryEditorState extends State<PoetryEditor>
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     var focusNode = FocusNode();
     var counter = 0;
     return Scaffold(
@@ -291,8 +299,11 @@ class _PoetryEditorState extends State<PoetryEditor>
               size: 25,
             ),
             iconFunction: () {
-              // calculateTotalSyllables();
-              syllableAlreadyCalculated = true;
+              setState(() {
+                toFindSyllables = !toFindSyllables;
+                calculateTotalSyllables();
+                syllableAlreadyCalculated = true;
+              });
             },
           ),
           NeoIconButton(
@@ -337,6 +348,49 @@ class _PoetryEditorState extends State<PoetryEditor>
           //     ),
           //   ),
           // ),
+          Visibility(
+            visible: !startToWrite,
+            child: Positioned(
+              left: width * 0.1,
+              top: height * 0.07,
+              child: Row(
+                children: [
+                  SizedBox(
+                    height: height * 0.15,
+                    width: width * 0.15,
+                    child: FittedBox(
+                        fit: BoxFit.contain, child: Lottie.asset("arrow.json")),
+                  ),
+                  SizedBox(
+                    height: height * 0.2,
+                    width: width * 0.3,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 80),
+                      child:
+                          AnimatedTextKit(repeatForever: true, animatedTexts: [
+                        TypewriterAnimatedText(
+                          'Click on it!',
+                          textStyle: GoogleFonts.farro(
+                              fontSize: 24,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700),
+                          speed: const Duration(milliseconds: 100),
+                        ),
+                        TypewriterAnimatedText(
+                          'Write your poetry here',
+                          textStyle: GoogleFonts.farro(
+                              fontSize: 24,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700),
+                          speed: const Duration(milliseconds: 100),
+                        ),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           // Visibility(
           //   visible: result,
           //   child: Center(
@@ -367,6 +421,9 @@ class _PoetryEditorState extends State<PoetryEditor>
                             child: GestureDetector(
                               onTap: () {
                                 setState(() {
+                                  startToWrite = true;
+                                });
+                                setState(() {
                                   isOldLineEdit = true;
                                   isNewLineEdit = false;
                                   statusIndex = index;
@@ -384,9 +441,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                                 });
                                 _anotherLine = false;
                                 setState(() {
-                                  print(_line[index]);
-                                  print(countSyllables(_line[index]));
-                                  if (_line[index] == "") {
+                                  if (_line[index].isEmpty) {
                                     syllableCounter = 0;
                                   } else {
                                     syllableCounter =
@@ -396,6 +451,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                               },
                               child: NeoLineContainer(
                                 syllables: syllableCounter,
+                                toFindSyllables: toFindSyllables,
                                 selected: _selectedItem == _linesTracker[index],
                                 // onTap: () {
                                 //   // _selectedItem = _linesTracker[index];
@@ -437,7 +493,12 @@ class _PoetryEditorState extends State<PoetryEditor>
                     onKey: (event) {
                       if (event.isKeyPressed(LogicalKeyboardKey.space) ||
                           event.isKeyPressed(LogicalKeyboardKey.backspace)) {
-                        countSyllables(syllWord);
+                        setState(() {
+                          countSyllables(syllWord);
+                          _textController.text == ""
+                              ? syllableCounter = 0
+                              : syllableCounter;
+                        });
                       }
                     },
                     child: NeoTextField(
@@ -473,13 +534,14 @@ class _PoetryEditorState extends State<PoetryEditor>
                         isOldLineEdit = false;
                         setState(() {
                           _selectForEdit = newLineIndex++;
-                          print(newLineIndex);
+                          syllableCounter = 0;
                         });
                         circularMenu;
                         _insert();
                         _textController.clear();
                         syllableList = [0];
                         syllableAlreadyCalculated = false;
+                        _anotherLine = false;
                       },
                     ),
                   ),

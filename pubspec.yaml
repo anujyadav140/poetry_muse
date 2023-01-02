@@ -72,10 +72,11 @@ flutter:
   assets:
   - assets/empty_robot.riv
   - assets/empty-robot.riv
-  - assets/question.json
   - assets/simple_menu.riv
   - assets/add_icon.riv
   - assets/hamburger_menu.riv
+  - assets/question.json
+  - assets/arrow.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class NeoLineContainer extends StatefulWidget {
-  NeoLineContainer({
+  const NeoLineContainer({
     super.key,
     this.selected = false,
     required this.line,
@@ -12,11 +12,13 @@ class NeoLineContainer extends StatefulWidget {
     this.needNewLine = false,
     required this.syllables,
     required this.newLine,
+    required this.toFindSyllables,
   });
 
   final bool selected;
-  bool toEdit;
+  final bool toEdit;
   final bool newLine;
+  final bool toFindSyllables;
   final String line;
   final bool needNewLine;
   final int? syllables;
@@ -29,7 +31,6 @@ class _NeoLineContainerState extends State<NeoLineContainer> {
   late int syllable;
   @override
   void initState() {
-    widget.toEdit = true;
     super.initState();
   }
 
@@ -80,11 +81,11 @@ class _NeoLineContainerState extends State<NeoLineContainer> {
                     ? SizedBox(
                         width: width - 60,
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                          padding: const EdgeInsets.only(top: 10.0, left: 5.0),
                           child: AutoSizeText(
-                            widget.toEdit
-                                ? "${widget.line} ${widget.syllables} "
-                                : widget.line,
+                            // widget.toEdit && widget.toFindSyllables
+                            // ? widget.line + widget.syllables.toString()
+                            widget.line,
                             style: const TextStyle(fontSize: 20),
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
@@ -97,6 +98,25 @@ class _NeoLineContainerState extends State<NeoLineContainer> {
                         "",
                         style: TextStyle(fontSize: 25),
                       ),
+                widget.toEdit
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          color: Colors.yellow,
+                          child: Visibility(
+                            visible: widget.toFindSyllables,
+                            child: Text(
+                              widget.syllables.toString(),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox(),
               ],
             ),
           ),
