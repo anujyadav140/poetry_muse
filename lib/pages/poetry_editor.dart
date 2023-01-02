@@ -108,6 +108,10 @@ class _PoetryEditorState extends State<PoetryEditor>
   bool startToWrite = false;
 
   bool toFindSyllables = false;
+
+  bool toFindMetre = false;
+
+  String metre = "";
   @override
   void initState() {
     _controller = AnimationController(
@@ -177,13 +181,15 @@ class _PoetryEditorState extends State<PoetryEditor>
     data = await getMetre(url);
     var decodedData = jsonDecode(data);
     setState(() {
-      _meterIndex++;
-      meter.insert(_meterIndex, decodedData['meter']);
+      meter.add(decodedData['meter']);
+      metre = decodedData['meter'].toString();
     });
+    print(metre);
     // displayMetre();
   }
 
   String syllWord = "";
+  String metreWord = "";
   late int syllableCounter = 0;
   late List<int> syllableList = [0];
   int syllableIndex = 0;
@@ -273,15 +279,12 @@ class _PoetryEditorState extends State<PoetryEditor>
               size: 25,
             ),
             iconFunction: () {
-              if (_line.first == "") {
-              } else {
-                setState(() {
-                  for (var i = 0; i < _line.length; i++) {
-                    url = 'http://127.0.0.1:5000/meter?lines=${_line[i]}';
-                    findMetre();
-                  }
-                });
-              }
+              setState(() {
+                toFindMetre = !toFindMetre;
+                metreWord = _line[indexTracker];
+                url = 'http://127.0.0.1:5000/meter?lines=$metreWord';
+                findMetre();
+              });
             },
           ),
           NeoIconButton(
@@ -448,10 +451,19 @@ class _PoetryEditorState extends State<PoetryEditor>
                                         countSyllables(_line[index]);
                                   }
                                 });
+                                setState(() {
+                                  if (toFindMetre) {
+                                    metreWord = _line[index];
+                                    url =
+                                        'http://127.0.0.1:5000/meter?lines=$metreWord';
+                                    findMetre();
+                                  }
+                                });
                               },
                               child: NeoLineContainer(
                                 syllables: syllableCounter,
                                 toFindSyllables: toFindSyllables,
+                                toFindMetre: toFindMetre,
                                 selected: _selectedItem == _linesTracker[index],
                                 // onTap: () {
                                 //   // _selectedItem = _linesTracker[index];
@@ -470,6 +482,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                                         ? _anotherLine
                                         : false,
                                 newLine: _selectForEdit == newLineIndex++,
+                                metre: metre,
                               ),
                             ),
                           ),
@@ -499,12 +512,17 @@ class _PoetryEditorState extends State<PoetryEditor>
                               ? syllableCounter = 0
                               : syllableCounter;
                         });
+                        setState(() {
+                          url = 'http://127.0.0.1:5000/meter?lines=$metreWord';
+                          findMetre();
+                        });
                       }
                     },
                     child: NeoTextField(
                       textController: _textController,
                       onTextChange: (value) {
                         syllWord = value;
+                        metreWord = value;
                         setState(() {
                           isNewLineEdit
                               ? _line[indexTracker] = value
@@ -535,6 +553,7 @@ class _PoetryEditorState extends State<PoetryEditor>
                         setState(() {
                           _selectForEdit = newLineIndex++;
                           syllableCounter = 0;
+                          metre = "";
                         });
                         circularMenu;
                         _insert();
