@@ -162,10 +162,12 @@ class _ResultState extends State<Result> {
     data = await postForm(url, jsonEncode(widget.lines));
     var decodeData = jsonDecode(data);
     setState(() {
-      var form = decodeData['form'];
+      Map form = decodeData['form'];
       print(form);
-      form.forEach((key, value) {
-        formData[key] = value;
+      setState(() {
+        form.forEach((key, value) {
+          formData[key] = value;
+        });
       });
     });
   }

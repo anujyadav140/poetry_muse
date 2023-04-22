@@ -18,8 +18,9 @@ Future getMetre(String url) async {
 Future postForm(String url, String body) async {
   http.Response response = await http.post(
     Uri.parse(url),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
+    headers: {
+      "content-type": "application/json",
+      "Access-Control-Allow-Origin": "*", // Required for CORS support to work
     },
     body: body,
   );
