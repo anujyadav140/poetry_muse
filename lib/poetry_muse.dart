@@ -3,20 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_language_id/google_mlkit_language_id.dart';
-import 'package:poetry_muse/components/findmeter.dart';
-import 'package:poetry_muse/components/neocard.dart';
-import 'package:poetry_muse/components/neodrawer.dart';
-import 'package:poetry_muse/components/neotextfield.dart';
 import 'package:poetry_muse/drawer.dart';
-import 'package:poetry_muse/components/neobrutton.dart';
-import 'package:poetry_muse/pages/poetry_analysis.dart';
 import 'package:poetry_muse/pages/poetry_editor.dart';
-import 'package:poetry_muse/reorder_lines.dart';
-import 'package:english_words/english_words.dart';
-import 'package:poetry_muse/swipe_card.dart';
-import 'package:poetry_muse/utilities/card.dart';
 
 class PoetryMuse extends StatefulWidget {
   const PoetryMuse({super.key});

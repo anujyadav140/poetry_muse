@@ -60,7 +60,7 @@ class _PoetryEditorState extends State<PoetryEditor>
   late var data;
 
   late List<String> meter = [""];
-  late int _meterIndex = -1;
+  late final int _meterIndex = -1;
   List<String> word = [""];
 
   late AnimationController _controller;

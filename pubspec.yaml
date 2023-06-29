@@ -33,10 +33,10 @@ dependencies:
   auto_size_text: ^3.0.0
   fluttertoast: ^8.1.2
   english_words: ^4.0.0
-  google_mlkit_language_id: ^0.5.0
-  appinio_swiper: ^1.1.1
-  rive: ^0.9.1
-  google_fonts: ^3.0.1
+  google_mlkit_language_id: ^0.7.0
+  appinio_swiper: ^2.0.2
+  rive: ^0.11.4
+  google_fonts: 
   lottie: ^2.1.0
   convex_bottom_bar: ^3.1.0+1
   circular_menu: ^2.0.1
